@@ -1,8 +1,48 @@
 const asyncHandler = require("express-async-handler");
+const Item = require("../../../models/item");
 
-exports.search = asyncHandler(async (req, res, next) => {
-  res.json({hehe : "hehe"});
-});
+exports.search = async (req, res) => {
+  try {
+    // Extract query parameters
+    const keyword = req.query.keyword.toLowerCase();
+    const offset = parseInt(req.query.offset) || 0; // Convert offset to integer, default to 0 if not provided
+
+    // Build query to filter items based on keyword
+    const query = { tags: { $regex: new RegExp(keyword, 'i') } };
+
+    // Fetch items based on query and apply pagination
+    const item_list = await Item.find(query)
+                                .limit(20)
+                                .skip(offset)
+                                .lean(); // Convert documents to plain JavaScript objects
+
+    const mappedItems = item_list.map(item => {
+      return item_details(item);
+    });
+                                     
+    // Get total count of items
+    const itemCount = await Item.countDocuments(query);
+
+    // Send response
+    res.json({ item_list: mappedItems, item_count: itemCount});
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Extract details for each item
+function item_details(item) {
+  return {
+    id: item._id.toString(),
+    name: item.name,
+    price: item.price,
+    preview_image: item.image_links ? item.image_links[0] : null,
+    items_sold: 0
+    // items_sold: item.orders.filter(order => order.status === 'received').length
+  };
+}
 
 // class Api::V1::ShopController < ApplicationController
 //   # GET /api/v1/search
