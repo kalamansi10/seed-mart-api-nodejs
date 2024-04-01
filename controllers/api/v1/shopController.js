@@ -1,3 +1,9 @@
+const asyncHandler = require("express-async-handler");
+
+exports.search = asyncHandler(async (req, res, next) => {
+  res.json({hehe : "hehe"});
+});
+
 // class Api::V1::ShopController < ApplicationController
 //   # GET /api/v1/search
 //   def search
