@@ -11,6 +11,7 @@ const mongoDB = userArgs[0];
 main().catch((err) => console.log(err));
 
 const Item = require("./models/item");
+const Banner = require("./models/banner");
 
 async function main() {
   console.log("Debug: About to connect");
@@ -18,6 +19,7 @@ async function main() {
     await mongoose.connect(mongoDB);
     console.log("Debug: Connected to MongoDB");
     await createItems();
+    await createBanners();
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
   } finally {
@@ -27,10 +29,17 @@ async function main() {
 }
 
 async function createItems() {
-  for (let seed of seeds) {
-    const item = new Item(seed);
-    item.tags = createTags(seed);
+  for (let object of seeds) {
+    const item = new Item(object);
+    item.tags = createTags(object);
     await item.save();
+  }
+}
+
+async function createBanners() {
+  for (let object of banners) {
+    const banner = new Banner(object);
+    await banner.save();
   }
 }
 
@@ -1695,3 +1704,21 @@ var seeds = [
     price: 678,
   },
 ];
+
+var banners = [
+  {
+    banner_name: "placeholder",
+    image_link: "https://placehold.co/900x400",
+    banner_link: "/"
+  },
+  {
+    banner_name: "placeholder",
+    image_link: "https://placehold.co/900x400",
+    banner_link: "/"
+  },
+  {
+    banner_name: "placeholder",
+    image_link: "https://placehold.co/900x400",
+    banner_link: "/"
+  },
+]
