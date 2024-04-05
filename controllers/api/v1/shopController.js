@@ -23,7 +23,6 @@ exports.search = async (req, res) => {
 
     // Map each item to item_details
     item_list = item_list.map(item => itemDetails(item));
-    console.log(limit)
     item_list = item_list.slice(offset, limit);
 
     res.json({item_list, item_count});
