@@ -1,10 +1,14 @@
 const express = require('express');
+const session = require("express-session");
+const passport = require('./passport'); 
+const LocalStrategy = require("passport-local").Strategy;
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const createError = require('http-errors');
 const mongoose = require("mongoose");
 
 const api_v1 = require("./routes/api_v1");
+const userRoutes = require("./routes/user");
 
 // Enable dotenv
 require('dotenv').config();
@@ -19,11 +23,16 @@ async function main() {
   await mongoose.connect(mongoDB);
 }
 
+// Middlewares
 app.use(logger('dev'));
 app.use(bodyParser.json());
+app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routing
 app.use("/api/v1", api_v1);
+app.use("/users", userRoutes);
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
