@@ -23,7 +23,7 @@ exports.create = async (req, res) => {
     // Create a new user instance with the hashed password
     const user = new User({
       email: email,
-      password_digest: hashedPassword, // Store the hashed password
+      passwordDigest: hashedPassword, // Store the hashed password
       name: name,
     });
 
