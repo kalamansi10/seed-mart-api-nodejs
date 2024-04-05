@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const passport = require('passport');
 const User = require("../models/user"); // Import User model
 
 // GET /users/current
@@ -7,30 +8,28 @@ exports.new = (req, res) => {
 };
 
 // POST /users/sign_in
-exports.create = async (req, res) => {
-  try {
-    const { email, password } = req.body.user;
-
-    // Find the user by email
-    const user = await User.findOne({ email });
-
-    // If user not found or password does not match
-    if (!user || !(await bcrypt.compare(password, user.password_digest))) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    // Log in the user and create a session (handled by Passport)
-    req.login(user, (err) => {
+exports.create = async (req, res, next) => {
+  passport.authenticate('local', (err, user) => {
+    try {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: "Internal Server Error" });
       }
-      return res.status(200).json({ message: "Logged in successfully" });
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      req.login(user, (err) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ message: "Internal Server Error" });
+        }
+        return res.status(200).json({ message: "Logged in successfully" });
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })(req, res, next);
 };
 
 // POST /users/sign_out
