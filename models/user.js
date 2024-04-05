@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.virtual('userInfo').get(function() {
   return {
+    id: this._id,
     email: this.email,
     name: this.name,
     gender: this.gender,

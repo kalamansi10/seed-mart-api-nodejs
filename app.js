@@ -6,6 +6,7 @@ const logger = require("morgan");
 const createError = require("http-errors");
 const mongoose = require("mongoose");
 const csrf = require("./middlewares/csrf");
+const cors = require("cors");
 
 const api_v1 = require("./routes/api_v1");
 const userRoutes = require("./routes/user");
@@ -26,6 +27,13 @@ async function main() {
 // Middlewares
 app.use(logger("dev"));
 app.use(bodyParser.json());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN, // Allow requests from this origin
+    methods: ["GET", "POST", "PATCH", "DELETE"], // Allow these HTTP methods
+    credentials: true,
+  })
+);
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
