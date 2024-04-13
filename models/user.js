@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     passwordDigest: { type: String, required: true },
     // reset_password_token: { type: String, unique: true },
     // reset_password_sent_at: { type: Date },
-    rememberMeToken: { type: String },
+    rememberMeToken: { type: String, default: null },
     name: { type: String },
     gender: { type: String },
     birthday: { type: Date },

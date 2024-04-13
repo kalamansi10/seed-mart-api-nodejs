@@ -2,10 +2,12 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("./middlewares/passport");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const createError = require("http-errors");
 const mongoose = require("mongoose");
 const csrf = require("./middlewares/csrf");
+const rememberMe = require("./middlewares/rememberMe");
 const cors = require("cors");
 
 const api_v1 = require("./routes/api_v1");
@@ -43,6 +45,8 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cookieParser());
+app.use(rememberMe.authenticate);
 app.use(csrf.verifyToken);
 app.use(csrf.attachToken);
 
