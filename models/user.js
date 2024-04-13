@@ -15,17 +15,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.virtual("info").get(function () {
-  return {
-    id: this._id,
-    email: this.email,
-    name: this.name,
-    gender: this.gender,
-    birthday: this.birthday,
-    createdAt: this.createdAt,
-    updatedAt: this.updatedAt,
-    // Add other fields as needed
-  };
+userSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+userSchema.set("toJSON", {
+  virtuals: true,
 });
 
 // Create a model based on the schema
