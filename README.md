@@ -6,6 +6,12 @@ This repository contains the Node.js backend API for Seed-Mart.
 
 This is a work in progess.
 
+## Issues
+
+### passport-remember-me
+
+The strategy is currently unmaintained and does not work properly with the latest version of Passport. The module uses ‘passport’ instead of ‘passport-strategy’ for its dependency and needs to be updated manually in order to use it.
+
 # About Seed-Mart
 
 Seed-Mart is a personal project of mine designed to showcase my current proficiency in web development. It is an e-commerce website that focuses on modularity and scalability. Every component of the application was made with flexibility in mind.
