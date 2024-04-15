@@ -30,23 +30,24 @@ async function main() {
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN, // Allow requests from this origin
-    methods: ["GET", "POST", "PATCH", "DELETE"], // Allow these HTTP methods
-    credentials: true,
-  })
-);
-app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
   })
 );
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN, // Allow requests from this origin
+    methods: ["GET", "POST", "PATCH", "DELETE"], // Allow these HTTP methods
+    credentials: true,
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
-app.use(rememberMe.authenticate);
+app.use("/users/sign_in",passport.authenticate('remember-me'));
+// app.use(rememberMe.authenticate);
 app.use(csrf.verifyToken);
 app.use(csrf.attachToken);
 

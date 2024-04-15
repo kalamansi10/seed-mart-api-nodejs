@@ -1,5 +1,7 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const RememberMeStrategy = require("passport-remember-me").Strategy;
+
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const User = require("../models/user");
@@ -35,6 +37,24 @@ passport.use(
   )
 );
 
+passport.use(
+  new RememberMeStrategy(
+    async (token, done) => {
+      const user = await User.findOne({ rememberMeToken: token });
+      if (!user) {
+        return done(null, false);
+      } // Token not valid or user not found
+      return done(null, user); // User found, authentication successful
+    },
+    async (user, done) => {
+      let newToken = generateNewToken(); // Implement your own token generation logic
+      user.rememberMeToken = newToken;
+      user.save();
+      return done(null, newToken); // Return the new token
+    }
+  )
+);
+
 passport.serializeUser((user, done) => {
   done(null, user);
 });
@@ -47,5 +67,9 @@ passport.deserializeUser(async (id, done) => {
     done(err);
   }
 });
+
+function generateNewToken() {
+  return crypto.randomBytes(36).toString("hex");
+}
 
 module.exports = passport;

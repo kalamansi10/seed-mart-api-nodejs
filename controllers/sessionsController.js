@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 const passport = require("passport");
-const User = require("../models/user"); // Import User model
 
 // GET /users/current
 exports.new = (req, res) => {
