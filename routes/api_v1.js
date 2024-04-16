@@ -4,6 +4,7 @@ const router = express.Router();
 const shop_controller = require("../controllers/api/v1/shopController");
 const cart_controller = require("../controllers/api/v1/cartController");
 const user_controller = require("../controllers/api/v1/userController");
+const order_controller = require("../controllers/api/v1/orderController");
 
 // Shop item/s queries
 router.get("/search", shop_controller.search)
@@ -30,8 +31,9 @@ router.delete("/remove-shipping-address/:shipping_address_id", user_controller.r
 // put "/update-payment-method", to: "user#update_payment_method"
 // delete "/remove-payment-method/:payment_method_id", to: "user#remove_payment_method"
 
-// get "/get-orders", to: "user#get_orders"
-// get "/get-order/:order_reference", to: "user#get_order"
-// end
+// router.get("/get-orders", user_controller.getOrders)
+// router.get("/get-order", user_controller.getOrder)
+
+router.post("/order", order_controller.processOrder)
 
 module.exports = router;
