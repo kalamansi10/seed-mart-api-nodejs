@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const passport = require("passport");
+const User = require("../models/user"); // Import User model
 
 // GET /users/current
 exports.new = (req, res) => {
@@ -8,6 +9,10 @@ exports.new = (req, res) => {
 
 // POST /users/sign_in
 exports.create = async (req, res, next) => {
+  if (!req.body.user || !req.body.user.email || !req.body.user.password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
   passport.authenticate("local", (err, user) => {
     try {
       if (err) {
@@ -23,7 +28,11 @@ exports.create = async (req, res, next) => {
           return res.status(500).json({ message: "Internal Server Error" });
         }
         if (req.body.user.remember_me == 1) {
-          const token = generateToken();
+          let token;
+          do {
+            token = generateToken();
+          } while (await User.findOne({ rememberMeToken: token }));
+
           // Issue the token as a cookie
           res.cookie("remember_me", token, {
             httpOnly: true,

@@ -29,23 +29,29 @@ exports.getForCheckout = async (req, res) => {
 
 // POST /api/v1/update-carted-amount/:carted_id/:amount
 exports.addToCart = async (req, res) => {
+  const { item_id, amount } = req.query;
+
+  if (!item_id || !amount) {
+    return res.status(400).json({ message: "Item ID and amount are required" });
+  }
+
   try {
     // Find the carted item for the current user and item ID
     let cartedItem = await CartedItem.findOne({
       user: req.user.id,
-      item: req.query.item_id,
+      item: item_id,
     });
 
     if (cartedItem) {
       // If the carted item exists, update the amount
-      cartedItem.amount += parseInt(req.query.amount); // Increment the amount
+      cartedItem.amount += parseInt(amount); // Increment the amount
       await cartedItem.save(); // Save the updated carted item
     } else {
       // If the carted item doesn't exist, create a new one
       cartedItem = await CartedItem.create({
         user: req.user.id,
-        item: req.query.item_id,
-        amount: parseInt(req.query.amount),
+        item: item_id,
+        amount: parseInt(amount),
       });
     }
     res.status(200).json({ message: "Updated successfully" });
@@ -59,6 +65,10 @@ exports.updateCartedAmount = async (req, res) => {
   try {
     // Find the carted item
     let cartedItem = await CartedItem.findById(req.params.carted_id);
+    if (!cartedItem) {
+      return res.status(404).json({ message: "Carted item not found" });
+    }
+
     cartedItem.amount = req.params.amount; // Change amount
     await cartedItem.save(); // Save the updated carted item
     res.status(200).json({ message: "Updated successfully" });
@@ -72,6 +82,10 @@ exports.updateCheckoutStatus = async (req, res) => {
   try {
     // Find the carted item
     let cartedItem = await CartedItem.findById(req.params.carted_id);
+    if (!cartedItem) {
+      return res.status(404).json({ message: "Carted item not found" });
+    }
+
     cartedItem.is_for_checkout = req.params.is_for_checkout; // Change status
     await cartedItem.save(); // Save the updated carted item
     res.status(200).json({ message: "Updated successfully" });

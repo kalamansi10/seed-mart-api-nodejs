@@ -1,5 +1,4 @@
 const bcrypt = require("bcryptjs");
-
 const User = require("../models/user"); // Import User model
 
 // // GET /users
@@ -16,6 +15,10 @@ exports.create = async (req, res) => {
   try {
     // Extract user data from request body
     const { email, password, name } = req.body.user;
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
+    }  
 
     // Hash the password using bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);

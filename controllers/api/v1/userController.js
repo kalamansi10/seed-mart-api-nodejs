@@ -21,12 +21,18 @@ exports.addShippingAddress = async (req, res) => {
       is_main: true,
     });
 
+    const sanitizedAddress = sanitizeShippingAddress(req.body.shipping_address);
+
     const newShippingAddress = new ShippingAddress({
-      ...req.body.shipping_address,
+      ...sanitizedAddress,
       user: req.user.id,
     });
 
-    if ((await newShippingAddress.save()) && mainAddress && req.body.shipping_address.is_main) {
+    if (
+      (await newShippingAddress.save()) &&
+      mainAddress &&
+      req.body.shipping_address.is_main
+    ) {
       mainAddress.is_main = false;
       await mainAddress.save();
     }
@@ -51,3 +57,16 @@ exports.removeShippingAddress = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Input sanitizer
+function sanitizeShippingAddress(shippingAddress) {
+  return {
+    contact_name: shippingAddress.contact_name,
+    street_address: shippingAddress.street_address,
+    barangay: shippingAddress.barangay,
+    city: shippingAddress.city,
+    province: shippingAddress.province,
+    region: shippingAddress.region,
+    is_main: shippingAddress.is_main,
+  };
+}
