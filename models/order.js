@@ -16,6 +16,10 @@ const orderSchema = new mongoose.Schema(
       ref: "Item",
       required: true,
     },
+    review: {
+      type: Object,
+      required: false,
+    },
     shipping_address: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ShippingAddress",
