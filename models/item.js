@@ -10,6 +10,8 @@ const itemSchema = new mongoose.Schema({
   special_attributes: String,
   planting_method: String,
   package_size: String,
+  rating: Number,
+  item_sold: Number,
   price: { type: Number, required: true },
   tags: { type: String, required: true },
   image_links: { 
