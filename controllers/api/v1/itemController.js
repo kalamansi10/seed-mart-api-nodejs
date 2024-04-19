@@ -1,4 +1,6 @@
 const Item = require("../../../models/item"); // Import Item model
+const Review = require("../../../models/review"); // Import Review model
+const Order = require("../../../models/order"); // Import Order model
 
 // GET /api/v1/search
 exports.searchItems = async (req, res) => {
@@ -17,14 +19,18 @@ exports.searchItems = async (req, res) => {
       itemList = itemList.where({ price: { $lte: query.maximum } }); // Maximum price
 
     itemList = itemSorter(itemList, query.sort_by);
-
     let item_list = await itemList.exec();
-
     const item_count = item_list.length; // Item count before mapping and slicing
 
     // Map each item to item_details
     item_list = item_list.map((item) => itemDetails(item));
     item_list = item_list.slice(offset, limit);
+    for (let item of item_list) {
+      const itemSold = await getItemSold(item.id)
+      if (itemSold) item.item_sold = itemSold
+      const averageRating = await getAverageRating(item.id)
+      if (averageRating) item.rating = averageRating
+    }
 
     res.json({ item_list, item_count });
   } catch (error) {
@@ -36,13 +42,18 @@ exports.searchItems = async (req, res) => {
 // GET /api/v1/getItem/:item_id - will update placeholder fields
 exports.getItem = async (req, res) => {
   try {
-    let item = await Item.findById(req.params.item_id).lean();
+    const itemId = req.params.item_id
+    const reviews = await Review.find({ item: itemId })
+    const averageRating = await getAverageRating(itemId)
+    const itemSold = await getItemSold(itemId)
+    const item = await Item.findById(itemId).lean();
     res.json({
       ...item,
       id: item._id,
       average_rating: 5,
-      reviews: [],
-      item_sold: 999,
+      reviews: reviews || null,
+      average_rating: averageRating || 0,
+      item_sold: itemSold || 0,
     });
   } catch (error) {
     console.error(error);
@@ -69,6 +80,19 @@ function itemDetails(item) {
     name: item.name,
     price: item.price,
     preview_image: item.image_links ? item.image_links[0] : null,
-    // items_sold: item.orders.filter(order => order.status === 'received').length
   };
+}
+
+// Helper function to extract details for each item
+async function getItemSold(itemId) {
+  const itemSold = await Order.countDocuments({ item: itemId });
+  return itemSold;
+}
+
+// Helper function to extract details for each item
+async function getAverageRating(itemId) {
+  const reviews = await Review.find({ item: itemId });
+  const totalReviews = reviews.length;
+  const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+  return totalRating / totalReviews;
 }
