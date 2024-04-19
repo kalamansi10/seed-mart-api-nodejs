@@ -1,12 +1,12 @@
 const ShippingAddress = require("../../../models/shippingAddress");
 
 // GET /api/v1/get-shipping-addresses
-exports.getShippingAddress = async (req, res) => {
+exports.getShippingAddressList = async (req, res) => {
   try {
-    const shippingAddresses = await ShippingAddress.find({
+    const shippingAddressList = await ShippingAddress.find({
       user: req.user.id,
     }).sort({ createdAt: "desc" });
-    res.json(shippingAddresses);
+    res.json(shippingAddressList);
   } catch (error) {
     console.error("Error fetching shipping addresses", error);
     res.status(500).json({ message: "Error fetching shipping addresses" });
