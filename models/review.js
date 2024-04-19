@@ -17,6 +17,10 @@ const reviewSchema = new mongoose.Schema(
       ref: "Item",
       required: true,
     },
+    is_anonymous: {
+      type: Boolean,
+      default: false,
+    },
     rating: {
       type: Number,
       required: true,
