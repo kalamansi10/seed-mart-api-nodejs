@@ -1,5 +1,34 @@
 const crypto = require("crypto");
 const Order = require("../../../models/order");
+const Review = require("../../../models/review");
+const CartedItem = require("../../../models/cartedItem");
+
+// GET /api/v1/order/list
+exports.getOrderList = async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user.id }).populate("item");
+    for (let order of orders) {
+      const review = await Review.findOne({ order: order._id });
+      if (review) order.review = review;
+    }
+
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// GET /api/v1/order/:reference_id
+exports.getOrder = async (req, res) => {
+  try {
+    const orders = await Order.find({ reference_id: req.params.reference_id });
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 // POST /api/v1/order
 exports.processOrder = async (req, res) => {
@@ -13,13 +42,14 @@ exports.processOrder = async (req, res) => {
       if (!createdOrder) {
         throw new Error("Failed to create order");
       }
+      if (order.carted_id) {
+        await CartedItem.findOneAndDelete(order.carted_id);
+      }
     }
-    res
-      .status(201)
-      .json({
-        message: "Orders processed successfully",
-        reference_number: referenceNumber,
-      });
+    res.status(201).json({
+      message: "Orders processed successfully",
+      reference_number: referenceNumber,
+    });
   } catch (error) {
     console.error("Error processing order", error);
     res.status(500).json({ message: "Error processing order" });
