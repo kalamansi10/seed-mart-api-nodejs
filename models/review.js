@@ -17,6 +17,9 @@ const reviewSchema = new mongoose.Schema(
       ref: "Item",
       required: true,
     },
+    reviewer: {
+      type: String,
+    },
     is_anonymous: {
       type: Boolean,
       default: false,
@@ -35,6 +38,10 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.virtual("id").get(function () {
   return this._id.toHexString();
+});
+
+reviewSchema.virtual("created_at").get(function () {
+  return this.createdAt;
 });
 
 reviewSchema.set("toJSON", {

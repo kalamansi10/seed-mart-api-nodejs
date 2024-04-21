@@ -1,17 +1,23 @@
 const Review = require("../../../models/review");
 
+// Get /api/v1/review/list/:item_id
 exports.getReviewList = async (req, res) => {
   try {
-    const reviews = await Review.find({ item: req.params.item_id }).sort({
-      createdAt: "desc",
-    });
-    res.json(reviews);
+    const reviews = await Review.find({ item: req.params.item_id })
+      .sort({ createdAt: "desc" })
+      .populate("user", "name");
+
+    const formattedReviews = reviews.map((review) => ({
+      ...review.toJSON(),
+      reviewer: review.is_anonymous ? "Anonymous" : review.user.name,
+    }));
+
+    res.json(formattedReviews);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 // POST /api/v1/review
 exports.addReview = async (req, res) => {
   try {
