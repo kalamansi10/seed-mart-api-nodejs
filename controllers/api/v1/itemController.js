@@ -43,7 +43,6 @@ exports.searchItems = async (req, res) => {
 exports.getItem = async (req, res) => {
   try {
     const itemId = req.params.item_id
-    const reviews = await Review.find({ item: itemId })
     const averageRating = await getAverageRating(itemId)
     const itemSold = await getItemSold(itemId)
     const item = await Item.findById(itemId).lean();
@@ -51,7 +50,6 @@ exports.getItem = async (req, res) => {
       ...item,
       id: item._id,
       average_rating: 5,
-      reviews: reviews || null,
       average_rating: averageRating || 0,
       item_sold: itemSold || 0,
     });
