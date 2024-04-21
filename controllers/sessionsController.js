@@ -55,7 +55,7 @@ exports.create = async (req, res, next) => {
 exports.destroy = async (req, res) => {
   if (req.user) {
     req.user.rememberMeToken = null;
-    req.user.save();
+    await req.user.save();
     req.logOut(req.user, async (err) => {
       if (err) {
         console.error(err);
