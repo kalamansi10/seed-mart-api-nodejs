@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     rememberMeToken: { type: String, default: null },
     name: { type: String },
     gender: { type: String },
-    birthday: { type: Date },
+    birthday: { type: String },
   },
   { timestamps: true }
 );
