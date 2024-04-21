@@ -11,6 +11,10 @@ const shippingAddressSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    contact_number: {
+      type: String,
+      required: true,
+    },
     street_address: {
       type: String,
       required: true,
