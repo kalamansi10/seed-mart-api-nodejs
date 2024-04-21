@@ -17,8 +17,10 @@ exports.create = async (req, res) => {
     const { email, password, name } = req.body.user;
 
     if (!email || !password || !name) {
-      return res.status(400).json({ message: "Name, email, and password are required" });
-    }  
+      return res
+        .status(400)
+        .json({ message: "Name, email, and password are required" });
+    }
 
     // Hash the password using bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -40,6 +42,17 @@ exports.create = async (req, res) => {
   }
 };
 
+// POST /users
+exports.update = async (req, res) => {
+  try {
+    await req.user.updateOne(sanitizeUserInfo(req.body.user));
+    res.status(201).json({ message: "User updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // // PATCH /users
 // exports.edit = async (req, res) => {
 //   try {
@@ -48,3 +61,13 @@ exports.create = async (req, res) => {
 //     res.status(500).json({ message: "Internal Server Error" });
 //   }
 // };
+
+function sanitizeUserInfo(userInfoBody) {
+  const formattedDate = new Date(userInfoBody.birthday);
+  return {
+    email: userInfoBody.email,
+    name: userInfoBody.name,
+    gender: userInfoBody.gender,
+    ...(formattedDate && {birthday: formattedDate.toISOString().split('T')[0]}),
+  };
+}

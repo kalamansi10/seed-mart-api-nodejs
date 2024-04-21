@@ -9,5 +9,6 @@ router.post("/sign_in", sessions_controller.create)
 router.delete("/sign_out", sessions_controller.destroy)
 
 router.post("/", registrations_controller.create)
+router.put("/", registrations_controller.update)
 
 module.exports = router;
