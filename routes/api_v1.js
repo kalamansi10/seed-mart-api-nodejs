@@ -35,6 +35,7 @@ router.delete("/account/shipping-address/:shipping_address_id", account_controll
 router.get("/order/list", order_controller.getOrderList)
 router.get("/order/:reference_id", order_controller.getOrder)
 router.post("/order", order_controller.processOrder)
+router.post("/order/status", order_controller.updateOrderStatus)
 
 // Order review actions
 router.get("/review/list/:item_id", review_controller.getReviewList)
