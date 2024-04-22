@@ -72,7 +72,7 @@ async function createOrder(referenceNumber, order) {
   let newOrder = new Order({
     ...order,
     order_reference: referenceNumber,
-    status: "Delivery attempt",
+    status: "To Receive",
   });
 
   try {
