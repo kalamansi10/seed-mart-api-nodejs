@@ -62,6 +62,7 @@ exports.removeShippingAddress = async (req, res) => {
 function sanitizeShippingAddress(shippingAddress) {
   return {
     contact_name: shippingAddress.contact_name,
+    contact_number: shippingAddress.contact_number,
     street_address: shippingAddress.street_address,
     barangay: shippingAddress.barangay,
     city: shippingAddress.city,
