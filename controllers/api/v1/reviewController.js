@@ -18,6 +18,18 @@ exports.getReviewList = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// Get /api/v1/review/:order_id
+exports.getReview = async (req, res) => {
+  try {
+    const review = await Review.findOne({ order: req.params.order_id });
+    res.json(review);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // POST /api/v1/review
 exports.addReview = async (req, res) => {
   try {
@@ -35,9 +47,11 @@ exports.addReview = async (req, res) => {
 
 // PUT /api/v1/review
 exports.editReview = async (req, res) => {
+  console.log(req.params)
+  console.log(req.body.review)
   try {
     await Review.findOneAndUpdate(
-      { _id: req.body.review.id },
+      { _id: req.params.review_id },
       { $set: sanitizeReview(req.body.review) }
     );
     res.json({ message: "Review updated successfully" });
@@ -65,5 +79,6 @@ function sanitizeReview(review) {
     order: review.order_id,
     rating: review.rating,
     comment: review.comment,
+    is_anonymous: review.is_anonymous,
   };
 }
