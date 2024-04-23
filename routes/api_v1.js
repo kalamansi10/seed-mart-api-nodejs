@@ -39,9 +39,10 @@ router.post("/order/status", order_controller.updateOrderStatus)
 
 // Order review actions
 router.get("/review/list/:item_id", review_controller.getReviewList)
+router.get("/review/:order_id", review_controller.getReview)
 router.post("/review", review_controller.addReview)
-router.put("/review", review_controller.editReview)
-router.get("/review/:review_id", review_controller.deleteReview)
+router.put("/review/:review_id", review_controller.editReview)
+router.delete("/review/:review_id", review_controller.deleteReview)
 
 // Misc endpoints
 router.get("/misc/active-banners", misc_controller.getActiveBanners)
