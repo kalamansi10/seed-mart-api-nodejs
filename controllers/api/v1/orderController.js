@@ -1,17 +1,13 @@
 const crypto = require("crypto");
 const Order = require("../../../models/order");
-const Review = require("../../../models/review");
 const CartedItem = require("../../../models/cartedItem");
 
 // GET /api/v1/order/list
 exports.getOrderList = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id }).populate("item").sort({ createdAt: -1 });
-    for (let order of orders) {
-      const review = await Review.findOne({ order: order._id });
-      if (review) order.review = review;
-    }
-
+    const orders = await Order.find({ user: req.user.id })
+      .populate("item")
+      .sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -22,7 +18,9 @@ exports.getOrderList = async (req, res) => {
 // GET /api/v1/order/:reference_id
 exports.getOrder = async (req, res) => {
   try {
-    const orders = await Order.find({ order_reference: req.params.reference_id });
+    const orders = await Order.find({
+      order_reference: req.params.reference_id,
+    });
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -59,7 +57,9 @@ exports.processOrder = async (req, res) => {
 // GET /api/v1/order/status
 exports.updateOrderStatus = async (req, res) => {
   try {
-    const order = await Order.findOne({ order_reference: req.body.order.order_reference });
+    const order = await Order.findOne({
+      order_reference: req.body.order.order_reference,
+    });
     await order.updateOne({ status: req.body.order.status });
     res.status(201).json({ message: "Order status updated" });
   } catch (error) {
