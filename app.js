@@ -21,9 +21,14 @@ const mongoDB = process.env.MONGODB_URL;
 
 // Set up mongoose connection
 mongoose.set("strictQuery", false);
+// Set global maxTimeMS for all queries
+mongoose.set("maxTimeMS", 30000);
 main().catch((err) => console.log(err));
 async function main() {
-  await mongoose.connect(mongoDB);
+  await mongoose.connect(mongoDB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 }
 
 // Middlewares
@@ -46,7 +51,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
-app.use("/users/sign_in",passport.authenticate('remember-me'));
+app.use("/users/sign_in", passport.authenticate("remember-me"));
 // app.use(rememberMe.authenticate);
 app.use(csrf.verifyToken);
 app.use(csrf.attachToken);
